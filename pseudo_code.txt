@@ -1,0 +1,104 @@
+1. Describe the problem
+    Overall, we want to identify which reads had indexes that matched, which had index-hopping occur, and which have undetermined base calls. 
+    We also need to sort all of the reads into their own files, making sure all the information is contained within them. And we want to keep a count of 
+    how many indices match and which don't; before and after quality filtering of index reads
+    We want to make sure there are an additional four files: two FASTQ files for non-matching index-pairs and 
+    two FASTQ files when one or both index reads are unknown or of low quality 
+
+2. What output would be informative?
+    Properly label and match indices, and tag which reads are reverse compliments
+
+3. Develop algorithm using pseudocode
+
+• Use itertools to open all input files and all output files (52 files)
+
+FUNCTION1
+def rev_comp(nucleotide):
+    '''To get the reverse compliment of a read'''
+• Loop through the 4 files and get a list of the sequences
+    • if letter = A, write T
+    • if letter = T, write A
+    • if letter = C, write G
+    • if letter = G, write C
+• Get a list of the reverse compliment of each sequence
+        • use [:: -1]
+        • the list would be called rev_list
+
+    return rev_list
+
+FUNCTION2 
+def indices_add():
+    '''Add r2 and r3 indices to the headers of r1 and r4'''
+
+    • Start 4 counters to keep track of the lines and record number
+    • Open input files (R1,R2,R3,R4) and write to them
+    • Use regex for this
+        • start counter
+        • take R2 and R3 at a defined position and write them to the R1 header at a specified position. Create new file for R1
+        • take R2 and R3 at a defined position and write them to the R4 header at a specified position. Create new file for R4
+    
+    return new R1 and R4 files 
+Ex:
+    Input: @K00337:83:HJKJNBBXX:8:1101:1265:1191 1:N:0:1
+    Expected output: @K00337:83:HJKJNBBXX:8:1101:1265:1191 1:N:0:1 R2-R3
+
+FUNCTION3
+def convert_phred(letter):
+    """Converts a single character into a phred score"""
+    score =ord (letter)-33
+    
+    return score
+Ex:
+    Input: I
+    Expected output: 40
+
+FUNCTION4
+def check_indices():
+    '''Check the index of each read to see if it matches any of the 24 indexed libraries'''
+    
+    • Create list of 24 index libraries and possible hopped indexes 
+    • Loop through the files 
+        • reviewed_indices = if r2 or r3 match one of the list items (to callback later)
+        • if r2 or r3 don't match one of the list items, output it to unknown 
+    return reviewed_indices 
+
+
+• Add empty dictionary where keys = index pairs, values = number of records
+
+'''Put reads into categories based on if the indices match, are unmatched (index hopping),
+    or are unknown (N's)'''
+
+• Set 4 counters to loop through all 4 original files
+    • start dictionary counter 
+• Create 4 numpy arrays (all 1D) of length 4
+• Take the first 4 lines of each file to extract a single full read 
+• Open 4 original files
+    • For each record in each numpy array:
+        • compare sequences (line 2) from each file
+    • Call rev_comp function for r3 specifically. Update array for read 3 sequence to rev comp
+    • Filter out the low quality scores less than 20 for indices only
+    • If r2 and r3 sequences match:
+        • add r2 and r3 to the header of r1 and r4 with function indices_add()
+        • if more than one letter of the phred scores is less than 20:
+            • sort to unknown 
+        • if all scores are greater than 20:
+            • make sure that the indices match the 24 using check_indices() function and then write newly edited r1 and r4 to matched file 
+            • then output to corresponding file > [R1/R4][index label]_matched.fq
+            • add value to dictionary if it's not present; if it is, add to the counter
+    • If r2 and r3 sequences are unmatched WITHOUT N's (indicating index hopping): 
+        • add r2 and r3 to the header of r1 and r4 with function indices_add()
+        • use regex to figure out if R1 or R4 is the unmatched index 
+        if more than one than one letter of the phred scores is less than 20:
+            • sort to unknown 
+        • If indexes are unknown, don't have N's, and don't match any of the indexes, sort to unknown
+        • if all scores are greater than 20:
+            • make sure that the indices match the 24 using check_indices() and then write newly edited r1 and r4 to unmatched file 
+            • then output to corresponding file > [R1/R4][index label]_unmatched.fq
+            • add value to dictionary if it's not present; if it is, add  to the counter
+    • start counter for R1 and R4 
+    • If r2 and r3 sequences are unmatched WITH N's: 
+        • add r2 and r3 to the header of r1 and r4 with function indices_add()
+            • sort to unknown
+            • counter +1
+    reset the arrays
+    counters +1
