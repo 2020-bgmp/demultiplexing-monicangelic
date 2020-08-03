@@ -14,9 +14,12 @@
     1. Use markdown to insert your 4 histograms here.
     2. ```Your answer here```
     3. ```Your answer here```
-3. N base calls
-R2  3328051
-R3  3328051
+3. 
+| File | # of N Base Calls |
+|---|---|
+| R2 | 3328051 |
+| R3 | 3328051 |
+
 code: zcat 1294_S1_L008_R2_001.fastq.gz 1294_S1_L008_R3_001.fastq.gz | sed -n '2~4p' | grep "N" | wc -l
 
 ## Part 2
