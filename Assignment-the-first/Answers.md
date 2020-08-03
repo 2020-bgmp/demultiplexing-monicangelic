@@ -12,7 +12,7 @@
 
 2. Per-base NT distribution
     1. Use markdown to insert your 4 histograms here.
-    2. ![Read 1 QScore Distribution Plot](/Users/Monica/bioinformatics/Bi622/R1_qscoredist.png)
+    2. ![Read 1 QScore Distribution Plot](/images/R1_qscoredist.png)
     3. ```Your answer here```
 3. 
 | File | # of N Base Calls |
