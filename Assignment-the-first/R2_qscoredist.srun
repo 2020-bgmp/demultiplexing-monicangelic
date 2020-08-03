@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+#SBATCH --partition=bgmp
+#SBATCH --account=bgmp
+#SBATCH --job-name="R2_qscoredist.srun"
+#SBATCH --cpus-per-task=7
+#SBATCH --nodes=1
+#SBATCH --output=R2dist_%j.out
+#SBATCH --error=R2dist_%j.err
+#SBATCH --time=5:30:00
+
+conda activate bgmp_py37
+/usr/bin/time
+
+/home/mlong11/bioinfo/Bi622/demultiplex/part1_script.py \
+-f /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R2_001.fastq.gz \
+-l 101 -o R2_qscoredist.png
